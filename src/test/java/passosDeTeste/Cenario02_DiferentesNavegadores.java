@@ -37,7 +37,7 @@ public class Cenario02_DiferentesNavegadores {
 		this.chromeDriver.get(site + pagina);
 	}
 
-	@Quando("^acesso a pagina \"([^\"]*)\" do site \"([^\"]*)\" utilizado o navegador web Firefox$")
+	@Quando("^entro na pagina \"([^\"]*)\" do site \"([^\"]*)\" utilizado o navegador web Firefox$")
 	public void acesso_a_pagina_do_site_utilizado_o_navegador_web_Firefox(String pagina, String site) {
 		this.firefoxDriver = DriverFactory.getDriver("firefox");
 		this.firefoxDriver.get(site + pagina);
@@ -100,6 +100,97 @@ public class Cenario02_DiferentesNavegadores {
 		boolean videoEstaVisivel = Funcoes.estaVisivel(this.chromeDriver, "//*[@class='content clearfix']//iframe");
 
 		Assert.assertTrue(imagemEstaVisivel || videoEstaVisivel);
+	}
+
+	@Quando("^acesso a pagina (.*)$")
+	public void acesso_a_pagina(String pagina) {
+		this.chromeDriver.get(pagina);
+	}
+
+	@Entao("^todas as paginas devem apresentar a ferramenta de busca do site$")
+	public void todas_as_paginas_devem_apresentar_a_ferramenta_de_busca_do_site() {
+		boolean buscaEstaVisivel = Funcoes.estaVisivel(this.chromeDriver, "//*[@name='busca']");
+		Assert.assertTrue(buscaEstaVisivel);
+	}
+
+	@Entao("^a pagina deve conter informacoes que orientem preenchimento de seu formulario corretamente$")
+	public void a_pagina_deve_conter_informacoes_que_orientem_preenchimento_de_seu_formulario_corretamente() throws Exception {
+		Funcoes.moverMouse(this.chromeDriver, "//*[@id='frm']/table[1]/tbody/tr/td[1]/a[2]");
+		Thread.sleep(200);
+		boolean ajudaUnidadeGestoraEstaVisivel = this.chromeDriver.findElement(By.id("apoio-ug")).isDisplayed();
+		Assert.assertTrue(ajudaUnidadeGestoraEstaVisivel);
+
+		Funcoes.moverMouse(this.chromeDriver, "//*[@id='frm']/table[2]/tbody/tr/td[1]/a[2]");
+		Thread.sleep(200);
+		boolean ajudaGestaoEstaVisivel = this.chromeDriver.findElement(By.id("apoio-gestao")).isDisplayed();
+		Assert.assertTrue(ajudaGestaoEstaVisivel);
+
+		Funcoes.moverMouse(this.chromeDriver, "//*[@id='frm']/table[4]/tbody/tr/td[1]/a[2]");
+		Thread.sleep(200);
+		boolean ajudaRecolhimentoEstaVisivel = this.chromeDriver.findElement(By.id("apoio-recolhimento")).isDisplayed();
+		Assert.assertTrue(ajudaRecolhimentoEstaVisivel);
+	}
+
+	@Quando("^eu acesso a pagina inicial do site \"([^\"]*)\" utilizando o navegador web Chrome$")
+	public void eu_acesso_a_pagina_inicial_do_site_utilizando_o_navegador_web_Chrome(String site) {
+		this.chromeDriver = DriverFactory.getDriver("chrome");
+		this.chromeDriver.get(site);
+	}
+
+	@Entao("^deve haver um link para o mapa do site na pagina$")
+	public void deve_haver_um_link_para_o_mapa_do_site_na_pagina() {
+		this.chromeDriver.findElement(By.xpath("//*[@id='topbar']/li[4]/a")).click();
+		String descricaoLinks = this.chromeDriver.findElement(By.xpath("//*[@class='content clearfix']")).getText();
+		Assert.assertTrue(descricaoLinks.contains("Apresentação"));
+		Assert.assertTrue(descricaoLinks.contains("Serviços gratuitos"));
+		Assert.assertTrue(descricaoLinks.contains("Graduação"));
+		Assert.assertTrue(descricaoLinks.contains("Editora"));
+		Assert.assertTrue(descricaoLinks.contains("Instagram"));
+	}
+
+	@Entao("^a pagina deve conter um link destacado para o servico \"([^\"]*)\"")
+	public void a_pagina_deve_conter_um_link_destacado_para_o_servico(String servico) {
+		String descricaoLinks = this.chromeDriver.findElement(By.xpath("//*[@class='fw3-processo-judicial fw3-panel-inverse']")).getText();
+		System.out.println(descricaoLinks);
+		System.out.println(servico);
+		Assert.assertTrue(descricaoLinks.contains(servico));
+
+		this.chromeDriver.findElement(By.xpath("//*[@class='fw3-processo-judicial fw3-panel-inverse']//a[contains(text(), '" + servico + "')]")).click();
+		String URL = this.chromeDriver.getCurrentUrl();
+		Assert.assertEquals(URL, "https://www.tjsc.jus.br/consulta-processual");
+	}
+
+	@Quando("^submeto o formulario sem o preenchimento dos campos$")
+	public void submeto_o_formulario_sem_o_preenchimento_dos_campos() throws Exception {
+		this.chromeDriver.findElement(By.xpath("//*[@class='Validate_Required ']")).click();
+		this.chromeDriver.findElement(By.xpath("//*[@id='ServiceID']/option[4]")).click();
+		this.chromeDriver.findElement(By.xpath("//*[@class='Validate_Required ']")).click();
+		Thread.sleep(1000);
+		this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[2]/button")).click();
+		Thread.sleep(1000);
+	}
+
+	@Entao("^a pagina deve informar quais campos obrigatorios devem ser preenchidos$")
+	public void a_pagina_deve_informar_quais_campos_obrigatorios_devem_ser_preenchidos() {
+		String mensagemCampoUnidade = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[2]/div/div[1]")).getText();
+		String mensagemCampoNome = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[3]/div/div")).getText();
+		String mensagemCampoEmail = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[4]/div/div[1]")).getText();
+		String mensagemCampoLocal = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[5]/div/div")).getText();
+		String mensagemCampoTelefone = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[6]/div/div")).getText();
+		String mensagemCampoMotivo = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[7]/div/div[1]")).getText();
+		String mensagemCampoAssunto = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[8]/div/div")).getText();
+		String mensagemCampoDescricao = this.chromeDriver.findElement(By.xpath("//*[@id='alpaca2']/div[1]/div/div[9]/div/div")).getText();
+
+		String esteCampoEhObrigatorio = "Este campo é obrigatório.";
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoUnidade);
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoNome);
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoEmail);
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoLocal);
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoTelefone);
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoMotivo);
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoAssunto);
+		Assert.assertEquals(esteCampoEhObrigatorio, mensagemCampoDescricao);
+
 	}
 
 }

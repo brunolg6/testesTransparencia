@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 public class Funcoes {
 
@@ -39,5 +41,11 @@ public class Funcoes {
 		} catch (Throwable t) {
 			return false;
 		}
+	}
+
+	public static void moverMouse(WebDriver webDriver, String xpath) {
+		Actions builder = new Actions(webDriver);
+		WebElement we = webDriver.findElement(By.xpath(xpath));
+		builder.moveToElement(we).build().perform();
 	}
 }

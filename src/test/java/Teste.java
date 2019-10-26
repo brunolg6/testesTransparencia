@@ -1,9 +1,9 @@
 import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 import auxiliares.DriverFactory;
-import auxiliares.Funcoes;
 
 public class Teste {
 
@@ -13,12 +13,10 @@ public class Teste {
 	@Test
 	public void teste1() {
 
-		this.chromeDriver.get("https://noticias.ufsc.br/2019/10/ufsc-na-midia-protese-desenvolvida-na-engenharia-mecanica-beneficia-pacientes-que-perderam-a-laringe/");
+		this.chromeDriver.get("https://www.tjsc.jus.br");
 
-		boolean imagemEstaVisivel = Funcoes.estaVisivel(this.chromeDriver, "//*[@class='content clearfix']//img");
-		boolean videoEstaVisivel = Funcoes.estaVisivel(this.chromeDriver, "//*[@class='content clearfix']//iframe");
-
-		Assert.assertTrue(imagemEstaVisivel || videoEstaVisivel);
+		String descricaoLinks = this.chromeDriver.findElement(By.xpath("//*[@class='fw3-processo-judicial fw3-panel-inverse']")).getText();
+		Assert.assertTrue(descricaoLinks.contains("Consulta Processual"));
 	}
 
 }
