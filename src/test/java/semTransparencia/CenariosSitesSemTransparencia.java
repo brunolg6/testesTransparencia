@@ -45,11 +45,36 @@ public class CenariosSitesSemTransparencia {
 
 	@Entao("^as informacoes contidas na pagina sao disponibilizadas da mesma forma tanto com Chrome quanto no Firefox$")
 	public void as_informacoes_contidas_na_pagina_sao_disponibilizadas_da_mesma_forma_tanto_com_Chrome_quanto_no_Firefox() {
-		WebElement logoChrome = this.chromeDriver.findElement(By.id("/html/body/div[4]/div[2]/div[3]/div[1]/div"));
-		WebElement logoFirefox = this.firefoxDriver.findElement(By.id("/html/body/div[4]/div[2]/div[3]/div[1]/div"));
+		WebElement logoChrome = this.chromeDriver.findElement(By.id("topo-logo"));
+		WebElement logoFirefox = this.firefoxDriver.findElement(By.id("topo-logo"));
 		Assert.assertTrue(logoChrome.isDisplayed());
 		Assert.assertTrue(logoFirefox.isDisplayed());
 
+		WebElement menuTopoChrome = this.chromeDriver.findElement(By.id("menu-menu-topo"));
+		WebElement menuTopoFirefox = this.firefoxDriver.findElement(By.id("menu-menu-topo"));
+		Assert.assertTrue(menuTopoChrome.isDisplayed());
+		Assert.assertTrue(menuTopoFirefox.isDisplayed());
+
+		WebElement barraTpopChrome = this.chromeDriver.findElement(By.id("barra-topo"));
+		WebElement barraTopoFirefox = this.firefoxDriver.findElement(By.id("barra-topo"));
+		Assert.assertTrue(barraTpopChrome.isDisplayed());
+		Assert.assertTrue(barraTopoFirefox.isDisplayed());
+
+		WebElement sideBarLeftChrome = this.chromeDriver.findElement(By.id("menu-menu-casas-de-cultura"));
+		WebElement sideBarLeftFirefox = this.firefoxDriver.findElement(By.id("menu-menu-casas-de-cultura"));
+		Assert.assertTrue(sideBarLeftChrome.isDisplayed());
+		Assert.assertTrue(sideBarLeftFirefox.isDisplayed());
+
+		WebElement sideBarRightChrome = this.chromeDriver.findElement(By.id("slide-home"));
+		WebElement sideBarRightFirefox = this.firefoxDriver.findElement(By.id("slide-home"));
+		Assert.assertTrue(sideBarRightChrome.isDisplayed());
+		Assert.assertTrue(sideBarRightFirefox.isDisplayed());
+
+		WebElement imagemChrome = this.chromeDriver.findElement(By.xpath("/html/body/div[4]/div[2]/div[3]/div[3]/div/div/a/img"));
+		WebElement imagemFirefox = this.firefoxDriver.findElement(By.xpath("/html/body/div[4]/div[2]/div[3]/div[3]/div/div/a/img"));
+
+		Assert.assertTrue(imagemChrome.getSize().getHeight() > 50 || imagemChrome.getSize().getHeight() > 50);
+		Assert.assertTrue(imagemFirefox.getSize().getHeight() > 50 || imagemFirefox.getSize().getHeight() > 50);
 	}
 
 	@Dado("^que eu estou utilizando um computador sem mouse$")
@@ -91,6 +116,15 @@ public class CenariosSitesSemTransparencia {
 				|| contemTextoPesquise || contemTextoPesquisa || contemTextoPesquisar);
 	}
 
+	@Entao("^a pagina deve conter informacoes que orientem preenchimento de seu formulario corretamente$")
+	public void a_pagina_deve_conter_informacoes_que_orientem_preenchimento_de_seu_formulario_corretamente() {
+		boolean contemTextoAjuda = Funcoes.estaVisivel(this.chromeDriver, "//div[@class='meio']//*[contains(text(),'Ajuda')]");
+		boolean contemTextoApoio = Funcoes.estaVisivel(this.chromeDriver, "//div[@class='meio']//*[contains(text(),'Apoio')]");
+		boolean contemTextoPreencha = Funcoes.estaVisivel(this.chromeDriver, "//div[@class='meio']//*[contains(text(),'Preencha')]");
+
+		Assert.assertTrue(contemTextoAjuda || contemTextoApoio || contemTextoPreencha);
+	}
+
 	@Quando("^eu acesso a pagina inicial do site \"([^\"]*)\" utilizando o navegador web Chrome$")
 	public void eu_acesso_a_pagina_inicial_do_site_utilizando_o_navegador_web_Chrome(String site) {
 		this.chromeDriver = DriverFactory.getDriver("chrome");
@@ -99,19 +133,31 @@ public class CenariosSitesSemTransparencia {
 
 	@Entao("^deve haver um link para o mapa do site na pagina$")
 	public void deve_haver_um_link_para_o_mapa_do_site_na_pagina() {
-		this.chromeDriver.findElement(By.xpath("/html/body//*[contains(text(),'Mapa do site') or contains(text(),'Mapa do Site') or contains(text(),'MAPA DO SITE')]")).click();
-		String descricaoLinks = this.chromeDriver.findElement(By.xpath("//*[@class='content clearfix']")).getText();
-		Assert.assertTrue(descricaoLinks.contains("Cursos"));
-		Assert.assertTrue(descricaoLinks.contains("Leilões"));
-		Assert.assertTrue(descricaoLinks.contains("Pregões"));
-		Assert.assertTrue(descricaoLinks.contains("Contratos"));
-		Assert.assertTrue(descricaoLinks.contains("Leis"));
+		boolean mapaDoSiteVisivel = Funcoes.estaVisivel(this.chromeDriver,
+				"/html/body//*[contains(text(),'Mapa do site') or contains(text(),'Mapa do Site') or contains(text(),'MAPA DO SITE')]");
+		Assert.assertTrue(mapaDoSiteVisivel);
 	}
 
 	@Entao("^a pagina deve conter um link destacado para o servico \"([^\"]*)\"")
 	public void a_pagina_deve_conter_um_link_destacado_para_o_servico(String servico) {
-		boolean servicoEstaVisivel = this.chromeDriver.findElement(By.xpath("/html/body//*[contains(text(),'" + servico + "')]/..")).isDisplayed();
+		boolean servicoEstaVisivel = this.chromeDriver.findElement(By.xpath("/html/body//a[contains(text(),'" + servico + "')]")).isDisplayed();
 		Assert.assertTrue(servicoEstaVisivel);
+	}
+
+	@Quando("^submeto o formulario sem o preenchimento dos campos$")
+	public void submeto_o_formulario_sem_o_preenchimento_dos_campos() {
+		this.chromeDriver.findElement(By.xpath("//*[@id='btnSaldo']")).click();
+
+	}
+
+	@Entao("^a pagina deve informar quais campos obrigatorios devem ser preenchidos$")
+	public void a_pagina_deve_informar_quais_campos_obrigatorios_devem_ser_preenchidos() {
+		boolean infoPreenchidmentoVisivel = Funcoes.estaVisivel(this.chromeDriver,
+				"/html/body//*[contains(text(),'Obrigatório') or contains(text(),'obrigatório' or contains(text(),'OBRIGATÓRIO') "
+						+ "or contains(text(),'Preenchido' or contains(text(),'preenchido' or contains(text(),'PREENCHIDO') "
+						+ "or contains(text(),'Orientações' or contains(text(),'orientações' or contains(text(),'ORIENTAÇÕES')]");
+
+		Assert.assertTrue(infoPreenchidmentoVisivel);
 	}
 
 }
